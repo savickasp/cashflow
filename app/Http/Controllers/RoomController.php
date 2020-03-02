@@ -4,20 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RoomController extends Controller
 {
-    private $userId;
-
     public function __construct()
     {
         $this->middleware('auth');
-        $this->userId = auth()->user()->id;
     }
 
     public function index()
     {
-        return view('room.index', []);
+        $room = DB::table('room_user')
+            ->join('rooms', 'room_user.room_id', '=', 'rooms.id')
+            ->join('users', 'rooms.owner_id', '=', 'users.id')
+            ->select('room_user.room_id', 'rooms.owner_id', 'users.username', 'rooms.name', 'rooms.created_at')
+            ->where('room_user.user_id', '=', auth()->user()->id)
+            ->get();
+
+        return view('room.index', ['rooms' => $room]);
     }
 
     public function create()
