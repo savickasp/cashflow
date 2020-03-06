@@ -73,6 +73,6 @@ class RegisterController extends Controller
 
     public function redirectTo()
     {
-        return '/rooms';
+        return '/room';
     }
 }

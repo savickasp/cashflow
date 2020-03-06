@@ -20,10 +20,6 @@
                 <td>
                     <a class="btn btn-success"
                         href="{{ route('room.show', $room->room_id) }}">enter</a>
-                    @if($room->owner_id === auth()->user()->id)
-                    <a class="btn btn-dark"
-                    href="{{ route('room.edit', $room->owner_id) }}">settings</a>
-                    @endif
                 </td>
             </tr>
             @endforeach
