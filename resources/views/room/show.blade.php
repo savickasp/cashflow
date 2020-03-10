@@ -27,10 +27,15 @@
                         @endif
                     </td>
                     <td>
-                        @if($player->user_id === auth()->user()->id)
-                            <a class="btn btn-primary" href="{{ route('game.index', $player->id) }}">game sheet</a>
+                        @if($player->player_role === null)
+                            <span>Set Role first</span>
                         @else
-                            <a class="btn btn-primary" href="{{ route('game.check', $player->id) }}">check player</a>
+                            @if($player->user_id === auth()->user()->id)
+                                <a class="btn btn-primary" href="{{ route('game.index', $player->id) }}">game sheet</a>
+                            @else
+                                <a class="btn btn-primary" href="{{ route('game.check', $player->id) }}">check
+                                    player</a>
+                            @endif
                         @endif
                     </td>
                     @if($room->owner_id === auth()->user()->id && $player->user_id !== auth()->user()->id)

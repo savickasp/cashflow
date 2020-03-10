@@ -12,7 +12,9 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware('auth:api')
+    ->prefix('user/{user}/game/{game}')
+    ->group( function () {
+        Route::get('/liability/all', 'Game\LiabilityController@getAll');
+        Route::get('/asset/all', 'Game\AssetController@getAll');
+    });

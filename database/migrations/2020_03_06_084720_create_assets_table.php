@@ -15,7 +15,19 @@ class CreateAssetsTable extends Migration
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('game_id');
+            $table->string('name');
+            $table->integer('type')->nullable();
+            $table->integer('cash_flow')->nullable();
+            $table->integer('quantity')->nullable();
+            $table->integer('price')->nullable();
+            $table->integer('down_paymet')->nullable();
             $table->timestamps();
+
+            $table->foreign('game_id')
+                ->references('id')
+                ->on('games')
+                ->onDelete('cascade');
         });
     }
 

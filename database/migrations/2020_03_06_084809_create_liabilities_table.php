@@ -15,7 +15,18 @@ class CreateLiabilitiesTable extends Migration
     {
         Schema::create('liabilities', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('game_id');
+            $table->string('name');
+            $table->integer('type')->nullable();
+            $table->integer('cash_flow')->nullable();
+            $table->integer('child_number')->nullable();
+            $table->integer('loan_size')->nullable();
             $table->timestamps();
+
+            $table->foreign('game_id')
+                ->references('id')
+                ->on('games')
+                ->onDelete('cascade');
         });
     }
 
