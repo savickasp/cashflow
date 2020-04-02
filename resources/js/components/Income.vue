@@ -1,27 +1,23 @@
 <template>
-    <div>
+    <div class="table-responsive">
         <h2>Pajamos</h2>
-        <table>
+        <table class="table table-sm table-bordered table-hover">
             <thead>
-            <tr>
+            <tr class="thead-dark">
                 <th>Pajamu tipas</th>
                 <th>Pinigu srautas</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Atliginimas</td>
-                <th>{{this.salarySum}}</th>
-            </tr>
-            <tr v-for="asset in salary">
-                <td>Darbas</td>
+            <tr v-for="asset in salary" v-if="asset.cash_flow > 0">
+                <td>{{translation[asset.name]}}</td>
                 <td>{{asset.cash_flow}}</td>
             </tr>
             <tr>
                 <td>Nekilnojamas turtas/ verslas</td>
                 <th>{{this.ntBusinessSum}}</th>
             </tr>
-            <tr v-for="asset in ntBusiness">
+            <tr v-for="asset in ntBusiness"  v-if="asset.cash_flow > 0">
                 <td>{{asset.name}}</td>
                 <td>{{asset.cash_flow}}</td>
             </tr>
@@ -29,7 +25,7 @@
                 <td>Palukanos/ dividentai</td>
                 <th>{{this.interestSum}}</th>
             </tr>
-            <tr v-for="asset in interest">
+            <tr v-for="asset in interest"  v-if="asset.cash_flow > 0">
                 <td>{{asset.name}}</td>
                 <td>{{asset.cash_flow}}</td>
             </tr>
@@ -48,6 +44,15 @@
             },
             user: {
                 type: [Object, Boolean]
+            },
+            translation: {
+                type: [Object, Boolean],
+            },
+            passiveIncome: {
+                required: true,
+            },
+            totalIncome: {
+                required: true,
             }
         },
         created() {
@@ -66,6 +71,8 @@
 
                 this.salarySum = sum;
 
+                this.total();
+
                 return array;
             },
             ntBusiness() {
@@ -80,6 +87,9 @@
                 }
 
                 this.ntBusinessSum = sum;
+
+                this.total();
+                this.passive();
 
                 return array;
             },
@@ -96,16 +106,28 @@
 
                 this.interestSum = sum;
 
+                this.total();
+                this.passive();
+
                 return array;
             },
+        },
+        methods: {
             passive() {
-                return  this.ntBusinessSum + this.interestSum;
+                let sum = this.ntBusinessSum + this.interestSum;
+
+                this.$emit('update:passiveIncome', sum);
+
+                return sum;
             },
             total() {
-                return  this.salarySum + this.passive;
+                let sum = this.salarySum + this.ntBusinessSum + this.interestSum;
+
+                this.$emit('update:totalIncome', sum);
+
+                return sum;
             },
         },
-        methods: {},
         data: function () {
             return {
                 salarySum: 0,

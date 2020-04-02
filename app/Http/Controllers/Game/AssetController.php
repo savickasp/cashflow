@@ -37,4 +37,53 @@ class AssetController extends Controller
             return response(403);
         }
     }
+
+    public function addAsset(User $user, Game $game, Request $request)
+    {
+        if ($game->id === $request['game_id'] && $game->user_id === $user->id) {
+
+            $data = $request->validate([
+                'name' => 'string|required',
+                'quantity' => 'numeric|required',
+                'price' => 'numeric|required',
+                'game_id' => 'numeric|required',
+                'type' => 'numeric|required',
+                'cash_flow' => 'numeric|nullable'
+            ]);
+
+            $assets = Asset::insertGetId($data);
+            return response('updated');
+        } else {
+            return response(null, 401);
+        }
+    }
+
+    public function sellAsset(User $user, Game $game, Request $request)
+    {
+        if ($game->id === $request['game_id'] && $game->user_id === $user->id) {
+
+            $data = $request->validate([
+                'quantity' => 'numeric|required',
+            ]);
+
+            DB::table('assets')->where('id', '=', $request->id)->update($data);
+            return response('updated');
+        } else {
+            return response(null, 401);
+        }
+    }
+    public function addChild(User $user, Game $game, Request $request)
+    {
+        if ($game->id === $request['game_id'] && $game->user_id === $user->id) {
+
+            $data = $request->validate([
+                'child_number' => 'numeric|required',
+            ]);
+
+            DB::table('liabilities')->where('id', '=', $request->id)->update($data);
+            return response('updated');
+        } else {
+            return response(null, 401);
+        }
+    }
 }

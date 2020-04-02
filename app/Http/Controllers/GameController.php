@@ -25,7 +25,7 @@ class GameController extends Controller
                 'game_id' => $game->id
             ];
 
-            return view('game.index', ['user' => $user]);
+            return view('game.index', ['user' => $user, 'translation' => config()->get('translations')]);
         }
     }
 

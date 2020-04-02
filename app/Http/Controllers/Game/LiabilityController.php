@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Liability;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class LiabilityController extends Controller
@@ -30,14 +31,87 @@ class LiabilityController extends Controller
         $this->updateCarLoan($roleData['car_loan'], $roleData['car_payment']);
         $this->updateCreditLoan($roleData['credit_loan'], $roleData['credit_payment']);
         $this->updateConsumerLoan($roleData['consumer_loan'], $roleData['consumer_payment']);
+        $this->bankLoan();
     }
 
-// fixed values update
+
+    public function getAll(User $user, Game $game)
+    {
+        if ($game->user_id === $user->id) {
+            $liabilities = DB::table('liabilities')
+                ->where('game_id', '=', $game->id)
+                ->get();
+
+            return response($liabilities, 200);
+        } else {
+            return response(403);
+        }
+    }
+
+    public function repayLoan(User $user, Game $game, Request $request)
+    {
+        if ($game->id === $request['game_id'] && $game->user_id === $user->id) {
+
+            $liabillty = DB::table('liabilities')
+                ->where('id', '=', $request['id'])
+                ->first();
+
+            if ($liabillty->loan_size >= $request['loan_size']) {
+                $update = [
+                    'cash_flow' => round($liabillty->cash_flow * ($liabillty->loan_size - $request['loan_size']) / $liabillty->loan_size),
+                    'loan_size' => $liabillty->loan_size - $request['loan_size']
+                ];
+
+                $ret = DB::table('liabilities')
+                    ->where('id', '=', $liabillty->id)
+                    ->update($update);
+
+                if ($ret === 1) {
+                    return response()->json($update + ['id' => $request['id']]);
+                } else {
+                    return response(['error' => 'update failed']);
+                }
+            } else {
+                return response(['error' => 'loan repay sum is heigher then loan']);
+            }
+        } else {
+            return response(null, 401);
+        }
+    }
+
+    public function takeLoan(User $user, Game $game, Request $request)
+    {
+        if ($game->id === $request['game_id'] && $game->user_id === $user->id) {
+
+            $liabillty = DB::table('liabilities')
+                ->where('id', '=', $request['id'])
+                ->first();
+
+            $update = [
+                'cash_flow' => $liabillty->cash_flow + $request['cash_flow'],
+                'loan_size' => $liabillty->loan_size + $request['loan_size'],
+            ];
+
+            $ret = DB::table('liabilities')
+                ->where('id', '=', $liabillty->id)
+                ->update($update);
+
+            if ($ret === 1) {
+                return response()->json($update + ['id' => $request['id']]);
+            } else {
+                return response(['error' => 'update failed']);
+            }
+        } else {
+            return response(null, 401);
+        }
+    }
+
+    // fixed values update
 
     private function updateTaxes(int $cash_flow)
     {
         $this->liability = Liability::firstOrCreate(
-            ['game_id' => $this->gameId, 'name' => 'taxes'],
+            ['game_id' => $this->gameId, 'name' => 'taxes']
         );
 
         $this->liability->type = 0;
@@ -228,16 +302,14 @@ class LiabilityController extends Controller
         $this->liability->save();
     }
 
-    public function getAll(User $user, Game $game)
+    private function bankLoan($loan = 0)
     {
-        if ($game->user_id === $user->id) {
-            $liabilities = DB::table('liabilities')
-                ->where('game_id', '=', $game->id)
-                ->get();
+        $this->liability = Liability::firstOrCreate(
+            ['game_id' => $this->gameId, 'name' => 'bank_loan']
+        );
 
-            return response($liabilities, 200);
-        } else {
-            return response(403);
-        }
+        $this->liability->type = 2;
+        $this->liability->cash_flow = 0;
+        $this->liability->save();
     }
 }

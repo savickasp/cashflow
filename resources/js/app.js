@@ -23,6 +23,17 @@ window.Vue = require('vue');
 
 Vue.component('game-sheet', require('./components/GameSheet.vue').default);
 Vue.component('income', require('./components/Income.vue').default);
+Vue.component('expenses', require('./components/Expenses.vue').default);
+Vue.component('expenses', require('./components/ExpensesChild.vue').default);
+Vue.component('assets', require('./components/Assets.vue').default);
+Vue.component('liabilities', require('./components/Liabilities.vue').default);
+Vue.component('liabilities-loans', require('./components/LiabilitiesLoans.vue').default);
+Vue.component('assets-stocks', require('./components/AssetsStock.vue').default);
+Vue.component('assets-add-stocks', require('./components/AssetsAddStock.vue').default);
+Vue.component('assets-fonds', require('./components/AssetsFonds.vue').default);
+Vue.component('assets-add-fond', require('./components/AssetsAddFond.vue').default);
+Vue.component('assets-fonds', require('./components/AssetsNt.vue').default);
+Vue.component('assets-add-fond', require('./components/AssetsAddNt.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
